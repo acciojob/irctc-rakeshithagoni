@@ -80,7 +80,7 @@ public class TrainService {
         if (!train.getRoute().contains(s1)) {
             throw new Exception("Train is not passing from this station");
         }
-         return          train.getNoOfSeats()- train.getBookedTickets().size();
+         return          train.getBookedTickets().size();
 
 
 
