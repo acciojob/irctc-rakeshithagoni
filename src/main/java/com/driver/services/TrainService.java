@@ -107,16 +107,16 @@ public class TrainService {
         }
         List<Passenger> passengers= tickets.get(0).getPassengersList();
 
-//        // Find the oldest passenger age by iterating over the list of booked tickets
-//        int oldestAge = passengers.get(0).getAge();
-//        for (Ticket ticket : tickets) {
-//            Passenger passenger = ticket.getPassenger();
-//            if (passenger.getAge() > oldestAge) {
-//                oldestAge = passenger.getAge();
-//            }
-//        }
+        // Find the oldest passenger age by iterating over the list of booked tickets
+        int oldestAge = passengers.get(0).getAge();
+        for (Passenger s: passengers) {
+//            Passenger passenger = s.getAge();
+            if (s.getAge() > oldestAge) {
+                oldestAge = s.getAge();
+            }
+        }
 
-        return 0;
+        return oldestAge;
     }
 
 
