@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -71,18 +72,22 @@ public class TrainService {
         //if the trainId is not passing through that station
         //throw new Exception("Train is not passing from this station");
         //  in a happy case we need to find out the number of such people.
-             Train train= trainRepository.findById(trainId).get();
-        if (train == null) {
-            throw new Exception("Train not found");
-        }
-        String  s=train.getRoute();
-        String s1=station.toString();
-        if (!train.getRoute().contains(s1)) {
+        Train train = trainRepository.findById(trainId).get();
+
+        if(!train.getRoute().contains(station.toString())) {
             throw new Exception("Train is not passing from this station");
         }
-         return          train.getBookedTickets().size();
 
+        List<Ticket> bookedTicketList = train.getBookedTickets();
 
+        int noOfPassengersBoarding = 0;
+        for(Ticket ticket : bookedTicketList) {
+            if(ticket.getFromStation().equals(station)) {
+                noOfPassengersBoarding += ticket.getPassengersList().size();
+            }
+        }
+
+        return noOfPassengersBoarding;
 
     }
 
@@ -131,6 +136,17 @@ public class TrainService {
         //You can also assume the seconds and milli seconds value will be 0 in a LocalTime format.
 
         return null;
+    }
+    public int calculateFare(int trainId, String fromStation, String toStation) {
+        Train train = trainRepository.findById(trainId).get();
+
+        int fare = 0;
+
+        List<String> route = Arrays.asList(train.getRoute().split(","));
+
+        fare = 300 * (route.indexOf(toStation) - route.indexOf(fromStation));
+
+        return fare;
     }
 
 }

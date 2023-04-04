@@ -2,6 +2,7 @@ package com.driver.services;
 
 
 import com.driver.EntryDto.BookTicketEntryDto;
+import com.driver.EntryDto.SeatAvailabilityEntryDto;
 import com.driver.model.Passenger;
 import com.driver.model.Ticket;
 import com.driver.model.Train;
@@ -27,6 +28,8 @@ public class TicketService {
     PassengerRepository passengerRepository;
 
 
+    @Autowired
+    TrainService trainService;
 
     public Integer bookTicket(BookTicketEntryDto bookTicketEntryDto)throws Exception{
 
@@ -42,11 +45,47 @@ public class TicketService {
         //Save the bookedTickets in the train Object
         //Also in the passenger Entity change the attribute bookedTickets by using the attribute bookingPersonId.
        //And the end return the ticketId that has come from db
-        Ticket ticket=new Ticket();
-        ticket.setFromStation(bookTicketEntryDto.getFromStation());
-        ticket.setToStation(bookTicketEntryDto.getToStation());
+        Train train = trainRepository.findById(bookTicketEntryDto.getTrainId()).get();
+        Passenger bookingPerson = passengerRepository.findById(bookTicketEntryDto.getBookingPersonId()).get();
+        //Making the passengers list
+        List<Passenger> passengerList = new ArrayList<>();
+        for(int id : bookTicketEntryDto.getPassengerIds()) {
+            passengerList.add(passengerRepository.findById(id).get());
+        }
 
-        return   ticketRepository.save(ticket).getTicketId();
+        List<Ticket> bookedTicketList = train.getBookedTickets();
+        String sourceStation = bookTicketEntryDto.getFromStation().toString();
+        String destinationStation = bookTicketEntryDto.getToStation().toString();
+
+        //
+//        if(!train.getRoute().contains(sourceStation) || !train.getRoute().contains(destinationStation)){
+//            throw new Exception("No value present");
+//        }
+
+        SeatAvailabilityEntryDto seatAvailabilityEntryDto = new SeatAvailabilityEntryDto(train.getTrainId(),bookTicketEntryDto.getFromStation(),bookTicketEntryDto.getToStation());
+        int noOfAvailableSeats = trainService.calculateAvailableSeats(seatAvailabilityEntryDto);
+
+        if(noOfAvailableSeats < bookTicketEntryDto.getNoOfSeats()) {
+            throw new Exception("Less tickets are available");
+        }
+
+        //
+        Ticket ticket = new Ticket();
+        ticket.setFromStation(bookTicketEntryDto.getFromStation());
+        ticket.setToStation((bookTicketEntryDto.getToStation()));
+        ticket.setPassengersList(passengerList);
+        //calculate fare and set
+        ticket.setTotalFare(trainService.calculateFare(train.getTrainId(),sourceStation,destinationStation));
+
+        bookingPerson.getBookedTickets().add(ticket);
+        train.getBookedTickets().add(ticket);
+
+        //
+        trainRepository.save(train);
+//        ticketRepository.save(ticket);
+//        passengerRepository.save(bookingPerson);
+
+        return ticket.getTicketId();
 
 
 
