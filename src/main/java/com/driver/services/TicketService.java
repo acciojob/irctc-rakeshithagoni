@@ -27,6 +27,7 @@ public class TicketService {
     PassengerRepository passengerRepository;
 
 
+
     public Integer bookTicket(BookTicketEntryDto bookTicketEntryDto)throws Exception{
 
         //Check for validity
@@ -41,9 +42,13 @@ public class TicketService {
         //Save the bookedTickets in the train Object
         //Also in the passenger Entity change the attribute bookedTickets by using the attribute bookingPersonId.
        //And the end return the ticketId that has come from db
+        Ticket ticket=new Ticket();
+        ticket.setFromStation(bookTicketEntryDto.getFromStation());
+        ticket.setToStation(bookTicketEntryDto.getToStation());
+
+        return   ticketRepository.save(ticket).getTicketId();
 
 
-       return null;
 
     }
 }
