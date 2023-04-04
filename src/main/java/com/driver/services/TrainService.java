@@ -75,7 +75,9 @@ public class TrainService {
         if (train == null) {
             throw new Exception("Train not found");
         }
-        if (!train.getRoute().equals(station)) {
+        String  s=train.getRoute();
+        String s1=station.toString();
+        if (!train.getRoute().contains(s1)) {
             throw new Exception("Train is not passing from this station");
         }
          return          train.getNoOfSeats()- train.getBookedTickets().size();
