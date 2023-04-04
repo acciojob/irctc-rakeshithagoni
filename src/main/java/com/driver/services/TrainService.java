@@ -134,8 +134,27 @@ public class TrainService {
         //You can assume that the date change doesn't need to be done ie the travel will certainly happen with the same date (More details
         //in problem statement)
         //You can also assume the seconds and milli seconds value will be 0 in a LocalTime format.
+        List<Train> trainList = trainRepository.findAll();
 
-        return null;
+        List<Integer> trainIdList = new ArrayList<>();
+
+        for(Train train : trainList) {
+            //Filtering trains passing through the given station
+            if(train.getRoute().contains(station.toString())) {
+                //Filter the train by time of their arrival and departure at the given station
+
+                //get the no. of station train have to travel to reach this station
+                List<String> stationList = Arrays.asList(train.getRoute().split(","));
+                long hourToBeAdded = stationList.indexOf(station.toString());
+
+                //Arrival time of the train at given station
+                LocalTime arrivalTimeOfTrain = train.getDepartureTime().plusHours(hourToBeAdded);
+                if((startTime.isBefore(arrivalTimeOfTrain) || startTime.equals(arrivalTimeOfTrain)) && (endTime.isAfter(arrivalTimeOfTrain) || endTime.equals(arrivalTimeOfTrain))) {
+                    trainIdList.add(train.getTrainId());
+                }
+            }
+        }
+        return trainIdList;
     }
     public int calculateFare(int trainId, String fromStation, String toStation) {
         Train train = trainRepository.findById(trainId).get();
