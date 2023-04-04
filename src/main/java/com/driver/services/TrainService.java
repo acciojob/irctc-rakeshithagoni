@@ -26,7 +26,14 @@ public class TrainService {
         //and route String logic to be taken from the Problem statement.
         //Save the train and return the trainId that is generated from the database.
         //Avoid using the lombok library
-        return null;
+        Train train =new Train();
+        train.setRoute(trainEntryDto.getStationRoute().toString());
+        train.setNoOfSeats(trainEntryDto.getNoOfSeats());
+        train.setDepartureTime(trainEntryDto.getDepartureTime());
+        trainRepository.save(train);
+        train.getTrainId();
+
+        return train.getTrainId();
     }
 
     public Integer calculateAvailableSeats(SeatAvailabilityEntryDto seatAvailabilityEntryDto){
@@ -39,6 +46,8 @@ public class TrainService {
         //even if that seat is booked post the destStation or before the boardingStation
         //Inshort : a train has totalNo of seats and there are tickets from and to different locations
         //We need to find out the available seats between the given 2 stations.
+           Train s= trainRepository.findById(seatAvailabilityEntryDto.getTrainId()).get();
+
 
        return null;
     }
@@ -59,7 +68,7 @@ public class TrainService {
         //Throughout the journey of the train between any 2 stations
         //We need to find out the age of the oldest person that is travelling the train
         //If there are no people travelling in that train you can return 0
-
+          trainRepository.findById(trainId);
         return 0;
     }
 
